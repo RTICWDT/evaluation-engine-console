@@ -1,0 +1,1173 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EvaluationEngineConsole</name>
+    </assembly>
+    <members>
+        <member name="T:EvaluationEngineConsole.ExpectedFields.EEFields">
+            <summary>
+            A class for managing the expected and optional list of fields.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.ExpectedFields.EEFields.expectedFields">
+            <summary>
+            A string array with the fields we expect to find in a file uploaded by a state (this includes optional fields).
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.ExpectedFields.EEFields.optionalFields">
+            <summary>
+            A string array of optional fields. 
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.ExpectedFields.EEFields.GetSetOfExpectedFields">
+            <summary>
+            Gets a HashSet with the names of the fields we expect to find in a file uploaed by a state. 
+            </summary>
+            <returns>A HashSet with the names of the fields we expect to find in a file uploaed by state.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.ExpectedFields.EEFields.GetSetOfOptionalFields">
+            <summary>
+            Gets a HashSet with the names of optional fields.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:EvaluationEngineConsole.MPRHashing">
+            <summary>
+            A class in charge of hashing strings.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRHashing.HashID(System.String)">
+            <summary>
+            Hash a string.
+            </summary>
+            <param name="id">The string to hash.</param>
+            <returns>The hashed string.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRHashing.ComputeStudyID(System.String,System.String,System.String)">
+            <summary>
+            Generates a study id.
+            </summary>
+            <param name="hashedId">A hashed string.</param>
+            <param name="salt">A string unique for every hashed id.</param>
+            <param name="noise">A random string.</param>
+            <returns>A 88 character string.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRHashing.GenerateKey">
+            <summary>
+            Generates a key that can be later used to hash ids.
+            </summary>
+            <returns>A key in base 64.</returns>
+        </member>
+        <member name="T:EvaluationEngineConsole.IDataProvider">
+            <summary>
+            An interface for a class that connects the application to a database. 
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.CreateUploadDataTable(System.String,System.String[])">
+            <summary>
+            Creates a table in the database where data uploaded by the user are temporarily stored.
+            </summary>
+            <param name="tableName">The name of the table.</param>
+            <param name="tableColumns">The name of the columns for the table.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.DropUploadDataTable(System.String)">
+            <summary>
+            Drops a table from the Crosswalk database.
+            </summary>
+            <param name="tableName">The name of the table.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.GetCipherTextAndVectorByHashedId(System.String)">
+            <summary>
+            Gets the ciphertext and vector that correspond to a hashed id.
+            </summary>
+            <param name="hashedId">The hashed id.</param>
+            <returns>The CipherTextAndVector object corresponding to the hashed id.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.GetCipherTextAndVectorByStudyId(System.String)">
+            <summary>
+            Gets the ciphertext and vector that correspond to a study id.
+            </summary>
+            <param name="studyId">The study id</param>
+            <returns>The CipherTextAndVector object corresponding to the study id.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.GetDuplicateHashedIds(System.String)">
+            <summary>
+            Gets a set of all the hashed id that have duplicates in a table.
+            </summary>
+            <param name="tableName">The name of the table.</param>
+            <returns>A set with repeated hashed ids.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.GetHashedIdByStudyId(System.String)">
+            <summary>
+            Gets a hashed id that corresponds to study id.
+            </summary>
+            <param name="studyId">The study id.</param>
+            <returns>The hashed id if the record exists in the database; NULL otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.GetNumberOfRecordsInXWalk">
+            <summary>
+            Gets the number of records in the crosswalk database.
+            </summary>
+            <returns>An integer that corresponds to the number of records in the database; -1 if something went wrong.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.GetStudyIdByHashedId(System.String)">
+            <summary>
+            Gets the study id that corresponds to hashed id.
+            </summary>
+            <param name="hashedId">The hashed id.</param>
+            <returns>A study id if the record exists in the database; NULL otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.InsertCrosswalkRow(System.String,EvaluationEngineConsole.CipherTextAndVector,System.String)">
+            <summary>
+            Inserts a record into the crosswalk database.  A record consists of:
+            1) a hashed id, 2) a cipher text, 3) a vector, and 4) a study id.
+            </summary>
+            <param name="hashedId">The hashed id to insert.</param>
+            <param name="cipherAndVector">The object containing the ciphertext and vector.</param>
+            <param name="studyId">The study id.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.InsertRecordsInCrosswalk(System.String)">
+            <summary>
+            Inserts study ids that exist in the user's data table (but not in the Crosswalk) into the Crosswalk table.
+            </summary>
+            <param name="tableName">The name of the table where the user's data were uploaded to.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.OutputFileForStata(System.String,System.String,System.String[])">
+            <summary>
+            Generates a file containing the correct study ids to be passed to the Stata server.
+            Note that this file gets generated in the machine hosting the database.
+            </summary>
+            <param name="outputFile">The absolute file path for the file.</param>
+            <param name="tableName">The name of the table containing the records.</param>
+            <param name="headers">The fields that the output file should contain.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.TruncateTable(System.String)">
+            <summary>
+            Truncates a table in the Crosswalk database.
+            </summary>
+            <param name="tableName">The name of the table to truncate.</param>   
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.UpdateCipherTextAndVector(EvaluationEngineConsole.CipherTextAndVector,EvaluationEngineConsole.CipherTextAndVector)">
+            <summary>
+            Updates the values of a cipher text and its initialization vector.
+            </summary>
+            <param name="oldcav">The cipher text and vector we want to replace.</param>
+            <param name="newcav">The cipher text and vector we want to insert in the database.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.UpdateDuplicatesStudyIds(System.String)">
+            <summary>
+            Ensures that all duplicate records (i.e., records with the same HashedId) have the same StudyId
+            </summary>
+            <param name="tableName">The name of the table where the user's data were uploaded to.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.UpdateStudyIdsInUploadFile(System.String)">
+            <summary>
+            Updates the study ids of records in the table where user data were uploaded to.
+            So, the study id in the Crosswalk table (if it exists) is used to populate the target table.
+            </summary>
+            <param name="tableName">The name of the table where the user's data were uploaded to.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.IDataProvider.UploadOutputFile(System.String,System.String)">
+            <summary>
+            Uploads a csv file (the one submitted by the user) into a table.  This is done using a bulk upload.
+            Note that the csv file is sent from the client to the server.  The client does not have to be in the same
+            machine as the database. 
+            </summary>
+            <param name="tableName">The name of the table where we want to  insert the data.</param>
+            <param name="dataFile">The path to the csv file we wan to upload.</param>
+        </member>
+        <member name="T:EvaluationEngineConsole.Dispatcher">
+            <summary>
+            The most important class in the project.  Handles the user request by generating a feedback report, and when appropriate, a file containing StudyIds.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.logger">
+            <summary>
+            A logger to help with debugging.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.data">
+            <summary>
+            The object that communicates with the database.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.dispatchId">
+            <summary>
+            The id of the dispatcher. Will help to make logs more informative.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.options">
+            <summary>
+            The options passed through the command line.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.tempFile">
+            <summary>
+            The name of an intermediary file; contents of this file get uploaded to a table with the state's name.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.reportCsvFile">
+            <summary>
+            The file name for the csv report.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.indexOfStateId">
+            <summary>
+            The index of the field state student id in the headers file.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Dispatcher.indexOfFieldsToHash">
+            <summary>
+            A list containing all the indices of the fields that the user wants hashed.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.#ctor(EvaluationEngineConsole.Options,EvaluationEngineConsole.IDataProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EvaluationEngineConsole.Dispatcher"/> class.
+            </summary>
+            <param name="options">An Options object.</param>
+            <param name="data">An object implementing the IDateProvider interface.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.UpdateOutputFilePathExtension">
+            <summary>
+            Ensures that the output file and validation file bothh have the right extensions.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.Dispatch">
+            <summary>
+            In charge of uploading data to the Crosswalk database and producing a file for the Stata server.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.SetIndexOfStateId(System.String[])">
+            <summary>
+            Sets the index for the state student id.
+            </summary>
+            <param name="headers">The headers in the file originally uploaded by the user.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.SetIndexOfFieldsToHash(System.String[],System.Collections.Generic.IList{System.String})">
+            <summary>
+            Sets the list of indices tracking which fields to hash.
+            </summary>
+            <param name="headers">The headers in the input file submitted by the user.</param>
+            <param name="namesOfFieldsToHash">The names of fields to hashed as passed through the command line.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateValidationReport">
+            <summary>
+            Generates a validation report for the data file submitted by the user.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GetTargetFileHeaders">
+            <summary>
+            Gets the headers in the file uploaded by the user.
+            </summary>
+            <returns>An array of headers.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GetNumberOfRecordsInTargetFile">
+            <summary>
+            Gets the number of records in a file.  Skips the first row of the file because we are assuming that's the header.
+            </summary>
+            <returns>The number of records in the a file.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateCsvValidationReport">
+            <summary>
+            Generates a csv file with all records that failed one or more of the validation rules.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateFullCsvValidationReport">
+            <summary>
+            Generates two feedback reports: 
+            1] A report containing all the records that contained invalid values.  Only invalid values are shown to the user.
+            2] A report with statistics: for each field, a number of invalid records is presented. Listed also are fields not validated
+            either because they user misspelled it, or because we don't have a validation rule for it.  Finally the total number of 
+            fields with error is displayed.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateCsvErrorStatistics(System.String[],System.Collections.Generic.Dictionary{System.Int32,System.Int32},System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Generates a csv file containing the number of invalid records for each field. Listed also are fields not validated
+            either because they user misspelled it, or because we don't have a validation rule for it.  Finally the total number of 
+            fields with error is displayed.
+            </summary>
+            <param name="headers">The headers in the input file.</param>
+            <param name="errorCounter">A dictionary where the key is the index of the field, and the value is the number of errors for that field.</param>
+            <param name="fieldsValidated">The indices for the fields we validate.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateTextRowForFeedbackReport(System.String,System.Int32,System.Int32)">
+            <summary>
+            A helper method that outputs a string array containing text to help users understand the feedback reports.
+            </summary>
+            <param name="text">The text that should be displayed to the user.</param>
+            <param name="numColumns">The number of columns the feedback report has.</param>
+            <param name="startAtCol">The column where we should start displaying the text.</param>
+            <returns>A string array containing text to be displayed to the user.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateExcelValidationReport">
+            <summary>
+            Generates an Excel report with all records that failed validation rules.
+            Invalid cells are highlighted in baby blue.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GetErrorCounter(System.String[],System.Int32)">
+            <summary>
+            Generates an dictionary containing as many entries as there are elements in the headers array.
+            The keys are number starting from the initKey; all values are zero.
+            </summary>
+            <param name="headers">A string array with file headers.</param>
+            <param name="initKey">The starting key for the dictionary.</param>
+            <returns>A dictionary with as many entries as there are elements in the headers array. Keys: from initKey on. Values: zero</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateExcelErrorStatistics(ClosedXML.Excel.XLWorkbook,System.String[],System.Collections.Generic.Dictionary{System.Int32,System.Int32},System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Populates a spreadsheet in the passed workbook containing statistics about the error found in the input file.
+            </summary>
+            <param name="workbook">The workbook where we are putting the worksheet.</param>
+            <param name="headers">The file headers.</param>
+            <param name="errorCounter">A dictionary containing a count of the errors found.</param>
+            <param name="fieldsValidated">The indices of the fields validated.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.IsRowValid(System.Collections.Generic.Dictionary{System.Int32,System.Predicate{System.String}},System.String[])">
+            <summary>
+            Determines whether a row fails any of the validation rules.
+            </summary>
+            <param name="rules">A dictionary where the key is the index of the cell to validate, and the value is the rule to use.</param>
+            <param name="dataRow">The row we want to validate.</param>
+            <returns>True if all cells pass the rules; false otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GetIndexOfInvalidCells(System.Collections.Generic.Dictionary{System.Int32,System.Predicate{System.String}},System.String[])">
+            <summary>
+            Produces a list with the indices of cells failing validation rules.
+            </summary>
+            <param name="rules">A dictionary where the key is the index of the cell to validate, and the value is the rule to use.</param>
+            <param name="dataRow">The row we want to validate.</param>
+            <returns>A list with the indices of cells failing validation rules.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GetValidationRules(System.String[])">
+            <summary>
+            Gets the validation rules for a set of fields.
+            </summary>
+            <param name="headers">The fields we want to retrieve validation rules for.</param>
+            <returns>A dictionary where the key is the index of the cell to validate, and the value is the rule to use.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GenerateTempFileAndGetHeaders">
+            <summary>
+            Generates the temporary file that gets uploaded to a table with the state's name.
+            </summary>
+            <returns>An array headers containing the fields added (e.g., HashedId, StudyId, etc).</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.SetNameNewFieldsOutputCsv(System.String[])">
+            <summary>
+            Set the correct name for new fields added to the data originally uploaded by the user.
+            </summary>
+            <param name="headers">The list of original headers.</param>
+            <returns>An updated list of headers with correct column names.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.SanitizeColumns(System.String[])">
+            <summary>
+            Sanitizes the name of fields as the appear in the header of the input file.
+            Field name can only contain letters, numbers and underscores.
+            </summary>
+            <param name="headers">An array containing the fields to sanitize.</param>
+            <returns>An array the values of which have been sanitized.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.SanitizeString(System.String)">
+            <summary>
+            Sanitizes a string by removing any character that is not a letter, number or underscore.
+            </summary>
+            <param name="input">The string we want to sanitize.</param>
+            <returns>The sanitized string.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.GetFieldsToOmitFromOutput">
+            <summary>
+            A list containing the names of the fields that should not be included in the output file.
+            </summary>
+            <returns>A list of fields.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Dispatcher.MoveToXWalkDb(System.String[])">
+            <summary>
+            Moves data to the database and produces output file for Stata file.
+            </summary>
+            <param name="columns">The headers that exist in the temporary file.</param>
+        </member>
+        <member name="T:EvaluationEngineConsole.Validation.EEValidationRules">
+            <summary>
+            This class encapsulates the validation rules for uploaded files.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.AcadyearEndYear">
+            <summary>
+            The max year for the field ACADYEAR
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.BirthdayEndYear">
+            <summary>
+            The max year for the field BIRTHDAY
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.diplomaTypes">
+            <summary>
+            An array of valid diploma types.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.withdrawalTypes">
+            <summary>
+            An array of valid withdrawal types.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.gradeLevel">
+            <summary>
+            An array of valid grade levels.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.raceths">
+            <summary>
+            An array of valid race and ethnicities.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.yesNoUnknownMissing">
+            <summary>
+            An array with four possible values: yes, no, unknown, and missing.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.yesNoUnknown">
+            <summary>
+            An array with three possible values: yes, no, unknown.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.genders">
+            <summary>
+            An array with three possible genders: male, female, unkonwn.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.disabilities">
+            <summary>
+            An array with valid disabilities.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.oneThroughNine">
+            <summary>
+            An array with numbers 1 through 9.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.oneThroughThreeOrNine">
+            <summary>
+            An array with numbers 1, 2, 3, 9
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.oneThroughFiveOrNine">
+            <summary>
+            An array with numbers 1 - 5, and 9.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.elasbj">
+            <summary>
+            An array with valid values for fields elasbj.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.mthsbj">
+            <summary>
+            An array with valid values for fields mthsbj.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.eotstatus">
+            <summary>
+            An array with valid values for eto status
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.Validation.EEValidationRules.rules">
+            <summary>
+            A dictionary whose keys are the names of the fields to validate, and
+            whose values are the predicates used to validate the field's values.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.GetACADYEARendYear">
+            <summary>
+            Gets the max value for ACADYEAR.
+            </summary>
+            <returns>The max year for ACADYEAR.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.GetBirthdayEndYear">
+            <summary>
+            Gets the max value for BIRTHDAY.
+            </summary>
+            <returns>The max year for BIRTHDAY.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.ACADYEAR(System.String)">
+            <summary>
+            Ensures that a value falls between 2010 and acadyearEndYear.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if value falls between 2010 and acadyearEndYear; false otherwise (null or empty strings).</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.NoSpecialChars(System.String)">
+            <summary>
+            Does value contain only alphanumeric cases? If so, it passes the validation.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if string only contains alphanumeric characters. Null or empty strings are valid. False otherwise.  Note that a string with spaces is not valid.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.AlphabeticSpaceOrHyphen(System.String)">
+            <summary>
+            Does value contain only alphabetic characters, spaces or hyphens? If so, it passes the validation.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if string only contains alphabetic characters, spaces or hyphens. Null or empty strings are valid. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.AlphabeticOrSpace(System.String)">
+            <summary>
+            Does value contain only alphabetic characters or spaces? If so, it passes the validation.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if string only contains alphabetic characters or spaces. Null or empty strings are valid. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.Alphabetic(System.String)">
+            <summary>
+            Does value contain only alphabetic characters? If so, it passes the validation.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if string only contains alphabetic characters. Null or empty strings are valid. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.NAME_SUFFIX(System.String)">
+            <summary>
+            Ensures a suffix contains at most four letters, periods or numbers.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value contains at most four letters, periods or numbers; empty fields are valid. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.DISTRICTID_NCES_ENROLL(System.String)">
+            <summary>
+            Ensures that a string 
+            1] has exactly seven characters,
+            2] can be parsed as an integer,
+            3] when divided by 100000, the result is between 1 and 78.
+            The range of valid values is from 0100000 to 7899999
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the above conditions are met; false otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.ZeroToOneOrNine(System.String)">
+            <summary>
+            Ensures that a values fall between 0 and 1 or is 9.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value falls between 0 and 1 or is 9; false otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.GPACUM(System.String)">
+            <summary>
+            Ensures that the value field is numeric or null.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is numeric or null.  False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.IsDouble(System.String)">
+            <summary>
+            Checks to see if string can be converted to a double.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the string can be converted to a double.  False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.SCHOOLID_NCES_ENROLL_ASSESS(System.String)">
+            <summary>
+            Checks to ensure that the value
+            1] Has 12 characters
+            2] Is numeric
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value has 12 characters and is numeric.  False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.DIPLOMA_TYPE(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.WITHDRAWAL_TYPE(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.GENDER(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.RACETH(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.YesNoUnknownMissing(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.YesNoUnknown(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.GetYearMonthDay(System.String)">
+            <summary>
+            Takes a value that has been preposed, and
+            1] Ensures it has exactly 8 characters.
+            2] If it can covert the first 4 characters into an integer, it puts that int in the first element of the array.
+            3] If it can covert the next 2 characters into an integer, it puts that int in the second element of the array.
+            4] If it can covert the next 2 characters into an integer, it puts that int in the third element of the array.
+            This methods barfs if you pass a null value.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>An int array with three elements.  If the value passed is invalid, all three elements will be zero.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.IsValidDate(System.Int32[])">
+            <summary>
+            Determines if the date represented by a three element int array is valid.
+            </summary>
+            <param name="yearMonthDay">The value to be validated.</param>
+            <returns>True if the date is valid; false otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.BIRTHDATE(System.String)">
+            <summary>
+            Determines if a date falls between 1/1/1990 and 12/31/birthdayEndYear
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value falls between 1/1/1990 and 12/31/birthdayEndYear; false otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.GRADELEVEL(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.DISABILITY(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.OneThroughNine(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.ELAMTHDAT(System.String)">
+            <summary>
+            Ensures that a value is either:
+            1] 99999999
+            2] or a valid date.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True is value is either 99999999 or a valid date. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.ELASBJ(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.MTHSBJ(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.OneThroughThreeOrNine(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.OneThroughFiveOrNine(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.BetweenZeroAndTenK(System.String)">
+            <summary>
+            Determines whether a value falls in the range between 0 and 9999.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value falls between 0 and 9999. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.STUDENTID_STATE(System.String)">
+            <summary>
+            Ensures that the value
+            1] does not contain special characters,
+            2] is not null or empty.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value does not contain special character or is null or empty. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.NAME_FIRST_LAST(System.String)">
+            <summary>
+            Ensures that the first or last name
+            1] is not null or empty
+            2] contains only alphatic characters, spaces, apostrophes or hyphens.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is NOT null or empty and contains only alphabetic characters, spaces, apostrophes or hyphens. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.SCHOOL_DISTRICT_NAME_ENROLL_ASSESS(System.String)">
+            <summary>
+            Ensures that values contains only:
+            1] Alphanumeric characters,
+            2] Hashes,
+            3] Spaces,
+            4] Hyphens,
+            5] Periods.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the string contains alphanumeric characters, hashes, spaces, periods, or hyphens. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.EOT_STATUS(System.String)">
+            <summary>
+            Values are matched against a list of approved values.
+            </summary>
+            <param name="value">The value to be validated.</param>
+            <returns>True if the value is found the approved list of values. False otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.PreprocessValue(System.String)">
+            <summary>
+            Preprocesses a value to be validated by:
+            1] Trimming white space.
+            2] Making all characters upper case.
+            3] If a value is null, it returns an empty string.
+            </summary>
+            <param name="value">The value to preprocess.</param>
+            <returns>If value is null, then an empty string.  Otherwise, the value trimmed and made upper case.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.Validation.EEValidationRules.GetValidationRules(System.String[])">
+            <summary>
+            Gets a dictionary that contains all the predicates matching the fields in the headers' array. 
+            </summary>
+            <param name="headers">A string array with the fields we want to validate.</param>
+            <returns>A dictionary (keys: name of field; value: prediates to validate field's values)</returns>
+        </member>
+        <member name="T:EvaluationEngineConsole.MPRCipher">
+            <summary>
+            A class that manages encryption and decryption.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRCipher.GetCipherTextAndVector(System.String)">
+            <summary>
+            Encrypts a string.
+            </summary>
+            <param name="plainText">The string to encrypt.</param>
+            <returns>An object containing both the cipher text and vector.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRCipher.GetCipherTextAndVector(System.String,System.String)">
+            <summary>
+            Encrypts a string using a different key than the one generated internally by this class.
+            </summary>
+            <param name="plainText">The string to encrypt.</param>
+            <param name="clientKey">The key to use for encryption.</param>
+            <returns>The object containing the cipher text and vector.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRCipher.GetPlainText(EvaluationEngineConsole.CipherTextAndVector)">
+            <summary>
+            Decrypts a cipher text.
+            </summary>
+            <param name="cipherAndVector">An object containing the ciphertext and vector.</param>
+            <returns>The decrypted string.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRCipher.GetPlainText(EvaluationEngineConsole.CipherTextAndVector,System.String)">
+            <summary>
+            Decrypts a cipher using a given key.
+            </summary>
+            <param name="cipherAndVector">The object containing the cipher text and vector.</param>
+            <param name="clientKey">The key to be used.</param>
+            <returns>The decrypted string.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRCipher.GenerateKey">
+            <summary>
+            Generates a key that could be used for a cipher.
+            Use to populate configuration file.
+            </summary>
+            <returns>A key for a cipher.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.MPRCipher.CreateCipher">
+            <summary>
+            Creates a cipher. 
+            </summary>
+            <returns>A RijndaelManaged cipher object.</returns>
+        </member>
+        <member name="T:EvaluationEngineConsole.DataProvider">
+            <summary>
+            A class for running commands, and moving data to and from the PostgreSQL database.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.DataProvider.logger">
+            <summary>
+            A logger to help with debugging.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.GetStudyIdByHashedId(System.String)">
+            <summary>
+            Gets the study id that corresponds to hashed id.
+            </summary>
+            <param name="hashedId">The hashed id.</param>
+            <returns>A study id if the record exists in the database; NULL otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.GetHashedIdByStudyId(System.String)">
+            <summary>
+            Gets a hashed id that corresponds to study id.
+            </summary>
+            <param name="studyId">The study id.</param>
+            <returns>The hashed id if the record exists in the database; NULL otherwise.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.GetNumberOfRecordsInXWalk">
+            <summary>
+            Gets the number of records in the crosswalk database.
+            </summary>
+            <returns>An integer that corresponds to the number of records in the database; -1 if something went wrong.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.GetDuplicateHashedIds(System.String)">
+            <summary>
+            Gets a set of all the hashed id that have duplicates in a table.
+            </summary>
+            <param name="tableName">The name of the table.</param>
+            <returns>A set with repeated hashed ids.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.GetCipherTextAndVectorByStudyId(System.String)">
+            <summary>
+            Gets the ciphertext and vector that correspond to a study id.
+            </summary>
+            <param name="studyId">The study id</param>
+            <returns>The CipherTextAndVector object corresponding to the study id.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.GetCipherTextAndVectorByHashedId(System.String)">
+            <summary>
+            Gets the ciphertext and vector that correspond to a hashed id.
+            </summary>
+            <param name="hashedId">The hashed id.</param>
+            <returns>The CipherTextAndVector object corresponding to the hashed id.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.UpdateCipherTextAndVector(EvaluationEngineConsole.CipherTextAndVector,EvaluationEngineConsole.CipherTextAndVector)">
+            <summary>
+            Updates the values of a cipher text and its initialization vector.
+            </summary>
+            <param name="oldcav">The cipher text and vector we want to replace.</param>
+            <param name="newcav">The cipher text and vector we want to insert in the database.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.InsertCrosswalkRow(System.String,EvaluationEngineConsole.CipherTextAndVector,System.String)">
+            <summary>
+            Inserts a record into the crosswalk database.  A record consists of:
+            1) a hashed id, 2) a cipher text, 3) a vector, and 4) a study id.
+            </summary>
+            <param name="hashedId">The hashed id to insert.</param>
+            <param name="cipherAndVector">The object containing the ciphertext and vector.</param>
+            <param name="studyId">The study id.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.CreateUploadDataTable(System.String,System.String[])">
+            <summary>
+            Creates a table in the database where data uploaded by the user are temporarily stored.
+            </summary>
+            <param name="tableName">The name of the table.</param>
+            <param name="tableColumns">The name of the columns for the table.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.TruncateTable(System.String)">
+            <summary>
+            Truncates a table in the Crosswalk database.
+            </summary>
+            <param name="tableName">The name of the table to truncate.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.DropUploadDataTable(System.String)">
+            <summary>
+            Drops a table from the Crosswalk database.
+            </summary>
+            <param name="tableName">The name of the table.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.UploadOutputFile(System.String,System.String)">
+            <summary>
+            Uploads a csv file (the one submitted by the user) into a table.  This is done using a bulk upload.
+            Note that the csv file is sent from the client to the server.  The client does not have to be in the same
+            machine as the database. 
+            </summary>
+            <param name="tableName">The name of the table where we want to  insert the data.</param>
+            <param name="dataFile">The path to the csv file we wan to upload.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.UpdateDuplicatesStudyIds(System.String)">
+            <summary>
+            Ensures that all duplicate records (i.e., records with the same HashedId) have the same StudyId
+            </summary>
+            <param name="tableName">The name of the table where the user's data were uploaded to.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.UpdateStudyIdsInUploadFile(System.String)">
+            <summary>
+            Updates the study ids of records in the table where user data were uploaded to.
+            So, the study id in the Crosswalk table (if it exists) is used to populate the target table.
+            </summary>
+            <param name="tableName">The name of the table where the user's data were uploaded to.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.InsertRecordsInCrosswalk(System.String)">
+            <summary>
+            Inserts study ids that exist in the user's data table (but not in the Crosswalk) into the Crosswalk table.
+            </summary>
+            <param name="tableName">The name of the table where the user's data were uploaded to.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.OutputFileForStata(System.String,System.String,System.String[])">
+            <summary>
+            Generates a file containing the correct study ids to be passed to the Stata server.
+            Note that this file gets generated in the machine hosting the database.
+            </summary>
+            <param name="outputFile">The absolute file path for the file.</param>
+            <param name="tableName">The name of the table containing the records.</param>
+            <param name="headers">The fields that the output file should contain.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataProvider.GenericSqlCommand(System.String)">
+            <summary>
+            Executes SQL commands.
+            </summary>
+            <param name="sqlQuery">A sql query.</param>
+        </member>
+        <member name="P:EvaluationEngineConsole.DataProvider.CrosswalkConnectionString">
+            <summary>
+            Gets the connection string to connect to the database;
+            </summary>
+        </member>
+        <member name="T:EvaluationEngineConsole.Program">
+            <summary>
+            Entry point to the program.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Program.Main(System.String[])">
+            <summary>
+            Entry point.
+            </summary>
+            <param name="args">The options to run the application.</param>
+        </member>
+        <member name="T:EvaluationEngineConsole.OuputIdsManager">
+            <summary>
+            A class for handling encryption and decryptions of lists of ids using our key, or a client's.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.OuputIdsManager.dataProvider">
+            <summary>
+            An object that handles connection to the database.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.OuputIdsManager.#ctor(EvaluationEngineConsole.IDataProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EvaluationEngineConsole.OuputIdsManager"/> class. 
+            </summary>
+            <param name="dataProvider">An instance of a data provider to connect to the database.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.OuputIdsManager.GetIdEncryptedWithMPRKey(System.String)">
+            <summary>
+            Gets a ciphertext that uses MPR's key
+            1] Gets the ciphertext and vector stored in the dabase (this will be returned to the client).
+            2] Decrypts the ciphertext.
+            3] Encrypts the id with a new vector.
+            </summary>
+            <param name="studyId">The studyId of the real id we want to return.</param>
+            <returns>A ciphertext and vector that can be use to retrieve the real id.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.OuputIdsManager.GetIdEncryptedWithClientKey(System.String,System.String)">
+            <summary>
+            Gets a ciphertext that uses a client's key 
+            1] Gets the ciphertext and vector stored in the database.
+            2] Decrypts the ciphertext.
+            3] Encrypts the id with the client key.
+            </summary>
+            <param name="studyId">The studyId of the real id we want to return.</param>
+            <param name="clientKey">The client's key.</param>
+            <returns>A ciphertext and vector that can be use to retrieve the real id.</returns>
+        </member>
+        <member name="T:EvaluationEngineConsole.CipherTextAndVector">
+            <summary>
+            A class for storing a cipher text and an initialization vector.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.CipherTextAndVector.GetHashCode">
+            <summary>
+            See: answer by Marc Gravell in http://stackoverflow.com/questions/2920399/c-sharp-how-to-find-if-two-objects-are-equal
+            </summary>
+            <returns>the object's hash code.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.CipherTextAndVector.Equals(System.Object)">
+            <summary>
+            Are two objects of this type the same?
+            True if they have the same cipher text and the same vector.
+            False otherwise.
+            </summary>
+            <param name="obj">The other object to compare.</param>
+            <returns>True if the two objects are the equal; false otherwise.</returns>
+        </member>
+        <member name="P:EvaluationEngineConsole.CipherTextAndVector.CipherText">
+            <summary>
+            Gets or sets the cipher text.
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.CipherTextAndVector.Vector">
+            <summary>
+            Gets or sets the initialization vector.
+            </summary>
+        </member>
+        <member name="T:EvaluationEngineConsole.DataModels.EEDataModel">
+            <summary>
+            Specifies the columns in the files uploaded by the states
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataModels.EEDataModel.GetFields(System.String)">
+            <summary>
+            Sets and then gets the actual values for HashedId, StudyId, CipherText and Vector.
+            </summary>
+            <param name="stateId">The state student id.</param>
+            <returns>An array containing the values for HashedId, StudyId, CipherText and Vector.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataModels.EEDataModel.PopulateFields(System.String)">
+            <summary>
+            Sets the values for HashedId, StudyId, CipherText, and Vector.
+            </summary>
+            <param name="stateId">The state student id.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataModels.EEDataModel.HashAdditionalFields(System.String[],System.Collections.Generic.IList{System.Int32})">
+            <summary>
+            Hashes additional fields.
+            </summary>
+            <param name="otherFields">A complete student record.</param>
+            <param name="indexOfFieldsToHash">A list with the indices of the fields to hash.</param>
+            <returns>The student record with the additional fields hashed.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.DataModels.EEDataModel.Concat(System.String[],System.Collections.Generic.IList{System.Int32},System.Int32)">
+            <summary>
+            Extends the student data record by adding four new fields: HashedId, StudyId, CipherText and Vector.
+            It also hashes additional fields in the student record.
+            </summary>
+            <param name="otherFields">The student record (a row in the csv file uploaded by the user.  This is a string array.</param>
+            <param name="indexOfFieldsToHash">A list with the indices of the fields to hash.</param>
+            <param name="indexStateId">The index of the state student id.</param>
+            <returns>An augmented student record containing four new fields: HashedId, StudyId, CipherText and Vector.</returns>
+        </member>
+        <member name="P:EvaluationEngineConsole.DataModels.EEDataModel.HashedId">
+            <summary>
+            Gets or sets the HashedId
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.DataModels.EEDataModel.StudyId">
+            <summary>
+            Gets or sets the StudyId
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.DataModels.EEDataModel.CipherText">
+            <summary>
+            Gets or sets the CipherText
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.DataModels.EEDataModel.Vector">
+            <summary>
+            Gets or sets the Initialization Vector
+            </summary>
+        </member>
+        <member name="T:EvaluationEngineConsole.FileHandler">
+            <summary>
+            A class that manages the reading and writing to files.
+            </summary>
+        </member>
+        <member name="F:EvaluationEngineConsole.FileHandler.logger">
+            <summary>
+            A logger to keep track of all action performed.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.FileHandler.Read(System.String)">
+            <summary>
+            Reads a CSV file in an optimized way.
+            </summary>
+            <param name="filename">The file name to read.</param>
+            <returns>The collection of records in the file.</returns>
+        </member>
+        <member name="M:EvaluationEngineConsole.FileHandler.Write(System.String,System.Collections.Generic.IEnumerable{System.String[]},System.Func{System.String[],System.String[]})">
+            <summary>
+            Writes a CSV file in an optimized way.  Modifies each record by applying the function passed in by the caller.
+            </summary>
+            <param name="filename">The file name to create and write to.</param>
+            <param name="records">The collection of records to write.</param>
+            <param name="perRecordFunction">A function to modify each record.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.FileHandler.Write(System.String,System.Collections.Generic.IEnumerable{System.String[]})">
+            <summary>
+            Writes a CSV file in an optimized way.
+            </summary>
+            <param name="filename">The file name to create and write to.</param>
+            <param name="records">The collection of records to write.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.FileHandler.Write(System.String,System.Collections.Generic.IEnumerable{System.String[]},System.String[])">
+            <summary>
+            Writes a CSV file in an optimized way. The headers are written first.
+            </summary>
+            <param name="filename">The file name to create and write to.</param>
+            <param name="records">The collection of records to write.</param>
+            <param name="headers">The headers for the file.</param>
+        </member>
+        <member name="M:EvaluationEngineConsole.FileHandler.DeleteFile(System.String)">
+            <summary>
+            Deletes a file (if it exists in the system).
+            </summary>
+            <param name="filename">The name of the file to delete.</param>
+        </member>
+        <member name="T:EvaluationEngineConsole.Options">
+            <summary>
+            A class to model the options that can be passed to the application from the command line.
+            </summary>
+        </member>
+        <member name="M:EvaluationEngineConsole.Options.GetUsage">
+            <summary>
+            Describes how to use the application to the user.
+            </summary>
+            <returns>A string that looks pretty in the command line describing how to use the application.</returns>
+        </member>
+        <member name="P:EvaluationEngineConsole.Options.TargetFile">
+            <summary>
+            Gets or sets the file path for the file uploaded by the state user.
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.Options.OutputFile">
+            <summary>
+            Gets or sets the file path for the file that gets passed to the Stata server.
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.Options.TimeApplication">
+            <summary>
+            Gets or sets a value indicating whether we want to time the execution of the application.
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.Options.State">
+            <summary>
+            Gets or sets the state to which the target file belongs to.
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.Options.StateIdField">
+            <summary>
+            Gets or sets the name of the fields in the file containing the state student id.
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.Options.ValidationFile">
+            <summary>
+            Gets or sets the path to the Excel file that will be returned to the user.
+            </summary>
+        </member>
+        <member name="P:EvaluationEngineConsole.Options.FieldsToHash">
+            <summary>
+            Gets or sets additional fields to hash.
+            </summary>
+        </member>
+    </members>
+</doc>
