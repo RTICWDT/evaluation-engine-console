@@ -23,6 +23,6 @@ Finally, the Statistical Component is where the actual calculations occur. It is
 ### Setup:
 * If you haven't already, check out the Evaluation Engine Web UI project and create the various databases included with the project.
 
-* Check out this repo and update the App.config file to add your AES256 key and Key64 values, which will be shared between the various applications comprising Evaluation Engine. Also update the connection strings to point to the crosswalk database and the WebRServerMessages database. In order for tests to work correctly, also update EvaluationEngineConsole.Test.config.
+* Check out this repo and update the App.config file to add your AES256 key and Key64 values, which will be shared between the various applications comprising Evaluation Engine. Also update the connection strings to point to the crosswalk database. In order for tests to work correctly, also update EvaluationEngineConsole.Test.config.
 
-* This application will need to be installed as a Windows service after being built.
+* This applciation will live on a Windows machine which can connect to the crosswalk database, but not the other databases. The Service Broker application will handle communication via the WebRServerMessages database.
